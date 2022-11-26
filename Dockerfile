@@ -5,15 +5,11 @@ ARG PATH="/root/miniconda3/bin:${PATH}"
 
 RUN apt-get update
 RUN apt-get -y upgrade
-RUN apt-get -y install ffmpeg nano wget git libsndfile-dev
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O Miniconda3-latest-Linux-x86_64.sh &&\
-    chmod +x Miniconda3-latest-Linux-x86_64.sh &&\
-    bash Miniconda3-latest-Linux-x86_64.sh -b
-RUN conda install -c conda-forge gxx
+RUN apt-get -y install ffmpeg nano wget git libsndfile-dev python3 python3-pip g++
 COPY ./subaligner /subaligner
-RUN ls /subaligner
+COPY ./gunicorn.conf.py /gunicorn.conf.py
 WORKDIR "/subaligner/"
-RUN pip install . &&\
-    pip install gunicorn pyjwt flask flask_cors
+RUN python3 -m pip install . &&\
+    python3 -m pip install gunicorn pyjwt flask flask_cors
 
-ENTRYPOINT ["gunicorn", "-w", "1", "--chdir", "/app", "app:app"]
+ENTRYPOINT ["gunicorn", "-c", "/gunicorn.conf.py", "-w", "1", "--chdir", "/app", "app:app"]
