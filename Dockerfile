@@ -13,7 +13,7 @@ RUN conda install -c conda-forge gxx
 
 COPY ./subaligner /subaligner
 
-RUN pip install /subaligner/
+RUN pip install /subaligner/ &&/
     pip install gunicorn pyjwt flask flask_cors
 
 ENTRYPOINT ["gunicorn", "-w", "1", "--chdir", "/app", "app:app"]
